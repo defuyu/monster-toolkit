@@ -43,6 +43,7 @@ export default {
     },
     handleFocus (e) {
       e.target.select()
+      this.$emit('focus')
     }
   },
   created () {

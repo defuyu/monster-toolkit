@@ -1,4 +1,4 @@
-# monster
+# monster-toolkit
 
 ## 项目构建
 ```
@@ -24,7 +24,7 @@ Vue.use(MonsterToolkit)
 
 ## 示例对比
 ### monster-toolkit
-```
+```vue
 <template>
   <div>
     <p>select单选</p>
@@ -74,7 +74,7 @@ export default {
 ```
 
 ### element ui
-```
+```vue
 <template>
   <el-select v-model="value" placeholder="请选择">
     <el-option
