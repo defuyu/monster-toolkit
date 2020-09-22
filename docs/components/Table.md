@@ -4,126 +4,93 @@
 ## 示例  
 
 ### 效果
+<Demo><TableDemo/></Demo>
 
 ### 代码  
 ```vue
 <template>
-  <el-table
-    ref="table"
-    v-bind="$attrs"
-    v-on="$listeners"
-    @row-click="handleRowClick">
-    <el-table-column
-      v-if="['single', 'multiple'].includes(selectionType)"
-      width="55">
-      <template v-if="selectionType === 'multiple'" v-slot:header>
-        <el-checkbox
-          :value="selectStatus === 'all'"
-          :indeterminate="selectStatus === 'indeterminate'"
-          @input="handleCheckAllChange"
-        ></el-checkbox>
-      </template>
-      <template v-slot:default="{row, $index: index}">
-        <component
-          :is="selectionType === 'multiple' ? 'el-checkbox' : 'el-radio'"
-          class="first-header"
-          :value="selected"
-          :label="index"
-          @click.native.stop.prevent="handleSelectSingleRow(row, index)" />
-      </template>
-    </el-table-column>
-    <TableColumn
-      v-for="(column, index) in headers"
-      :key="`col${index}`"
-      v-bind="column"
-    >
-    </TableColumn>
-  </el-table>
+  <div>
+    <p>点击行选择数据</p>
+    <p>单选</p>
+    <mt-table
+      :data="tableData"
+      selection-type="single"
+      :selected="selected"
+      :columns="columns"
+      @row-selection-change="handleSelectRow"
+    />
+    <p>多选、全选、隐藏列</p>
+    <mt-table
+      :data="tableData"
+      selection-type="multiple"
+      :selected="multipleSelected"
+      :columns="columns"
+      :hiddenColumns="['address']"
+      @row-selection-add="handleMultipleSelectedAdd"
+      @row-selection-remove="handleMultipleSelectedRemove"
+      @all-row-selection-change="handleAllSelecedChange"
+    />
+  </div>
 </template>
 
 <script>
 export default {
-  inheritAttrs: false,
-  components: {
-    TableColumn: {
-      render: function (h) {
-        const render = this.$attrs.render
-        let scopedSlots
-        if (typeof render === 'function') {
-          scopedSlots = {
-            default: props => {
-              if (typeof render === 'function'){
-                return render(h, props)
-              }
-            }
+  components: {},
+  props: {},
+  data () {
+    return {
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1517 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }],
+      selected: undefined,
+      multipleSelected: [],
+      columns: [
+        {
+          label: '日期',
+          prop: 'date'
+        },
+        {
+          label: '姓名',
+          prop: 'name'
+        },
+        {
+          label: '地址',
+          prop: 'address',
+          render: (h, {row}) => {
+            return row.address
           }
         }
-        return h('el-table-column', {
-          props: this.$attrs,
-          scopedSlots
-        })
-      }
+      ]
     }
   },
-  props: {
-    props: Object,
-    columns: Array,
-    selectionType: {
-      type: String,
-      default: 'none'
-    },
-    selected: [Array, String, Number],
-    hiddenColumns: {
-      type: Array,
-      default () {
-        return []
-      }
-    },
-    selectOnRowClick: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data () {
-    return {}
-  },
-  computed: {
-    headers () {
-      const { columns, hiddenColumns } = this
-      return columns.filter(col => !hiddenColumns.find(prop => prop === col.prop))
-    },
-    selectStatus () {
-      const dataCount = this.$attrs.data.length
-      const count = this.selected.length
-      if (dataCount === 0 || count === 0) {
-        return 'none'
-      }
-      if (dataCount === count) {
-        return 'all'
-      }
-      return 'indeterminate'
-    }
-  },
+  computed: {},
   methods: {
-    handleSelectSingleRow (row, index) {
-      if (this.selectionType === 'multiple') {
-        const isExist = this.selected.some(item => item === index)
-        this.$emit(isExist ? 'row-selection-remove' : 'row-selection-add', row, index)
-      } else if (this.selectionType === 'single') {
-        this.$emit('row-selection-change', row, index)
-      }
+    handleSelectRow (row, index) {
+      this.selected = index
     },
-    handleRowClick (row) {
-      const index = this.$attrs.data.indexOf(row)
-      if (this.selectOnRowClick) {
-        this.handleSelectSingleRow(row, index)
-      }
-      this.$emit('row-click', ...arguments)
+    handleMultipleSelectedAdd (row, index) {
+      this.multipleSelected.push(index)
     },
-    handleCheckAllChange (val) {
-      const selectStatus = this.selectStatus
-      const status = selectStatus === 'all' || selectStatus === 'indeterminate'
-      this.$emit('all-row-selection-change', !status)
+    handleMultipleSelectedRemove (row, index) {
+      this.multipleSelected = this.multipleSelected.filter(item => item !== index)
+    },
+    handleAllSelecedChange (status) {
+      this.multipleSelected = status ? this.tableData.map((item, index) => index)
+        : []
     }
   },
   created() {}
@@ -131,9 +98,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.first-header >>> .el-radio__label,
-.first-header >>> .el-checkbox__label
-  display none
 </style>
 ```
 

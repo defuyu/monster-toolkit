@@ -4,6 +4,7 @@
 ## 示例  
 
 ### 效果
+<Demo><GroupTabsDemo/></Demo>
 
 ### 代码  
 ```vue

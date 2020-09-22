@@ -4,6 +4,7 @@
 ## 示例  
 
 ### 效果
+<Demo><InputIconEditDemo/></Demo>
 
 ### 代码  
 ```vue

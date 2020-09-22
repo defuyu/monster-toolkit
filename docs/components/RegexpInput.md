@@ -4,6 +4,9 @@
 ## 示例  
 
 ### 效果
+<demo>
+  <RegexpInputDemo />
+</demo>
 
 ### 代码  
 ```vue
